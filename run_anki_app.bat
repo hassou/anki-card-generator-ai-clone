@@ -2,6 +2,7 @@
 REM --- run_anki_app.bat ---
 
 REM This script activates your Python virtual environment and then runs your Anki card generation application.
+REM It will automatically create the virtual environment and install dependencies if they don't exist.
 REM You can place this file anywhere and run it from any directory.
 
 REM ######################################################################################################
@@ -19,16 +20,52 @@ REM ############################################################################
 REM ### Do not modify below this line unless you know what you're doing #################################
 REM ######################################################################################################
 
-echo Activating virtual environment...
-call "%PROJECT_ROOT%\%VENV_FOLDER_NAME%\Scripts\activate.bat"
+set "VENV_PATH=%PROJECT_ROOT%\%VENV_FOLDER_NAME%"
+set "PYTHON_EXE=%VENV_PATH%\Scripts\python.exe"
+set "ACTIVATE_SCRIPT=%VENV_PATH%\Scripts\activate.bat"
+set "REQUIREMENTS_FILE=%PROJECT_ROOT%\requirements.txt"
 
-if not exist "%PROJECT_ROOT%\%VENV_FOLDER_NAME%\Scripts\python.exe" (
+echo Checking for virtual environment...
+if not exist "%PYTHON_EXE%" (
+    echo Virtual environment not found. Creating one...
+    python -m venv "%VENV_PATH%"
+    if errorlevel 1 (
+        echo.
+        echo ERROR: Failed to create virtual environment.
+        echo Please ensure Python is installed and added to your PATH.
+        echo.
+        pause
+        goto :eof
+    )
+    echo Virtual environment created.
+) else (
+    echo Virtual environment found.
+)
+
+echo Activating virtual environment...
+call "%ACTIVATE_SCRIPT%"
+if errorlevel 1 (
     echo.
-    echo ERROR: Virtual environment not found at: "%PROJECT_ROOT%\%VENV_FOLDER_NAME%"
-    echo Please ensure PROJECT_ROOT and VENV_FOLDER_NAME are set correctly and the venv exists.
+    echo ERROR: Failed to activate virtual environment.
     echo.
     pause
     goto :eof
+)
+
+echo Checking for dependencies...
+if exist "%REQUIREMENTS_FILE%" (
+    echo Installing/updating dependencies from %REQUIREMENTS_FILE%...
+    pip install -r "%REQUIREMENTS_FILE%"
+    if errorlevel 1 (
+        echo.
+        echo ERROR: Failed to install dependencies.
+        echo.
+        pause
+        goto :eof
+    )
+    echo Dependencies installed.
+) else (
+    echo No requirements.txt found. Skipping dependency installation.
 )
 
 echo.
