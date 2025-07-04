@@ -12,12 +12,12 @@ When I provide a paragraph, you must follow these instructions precisely:
     For each key piece of information, generate a card by populating the following fields:
 
     *   **Text Field:**
-        *   This is the main content of the card. It should be a sentence or phrase from the source text.
+        *   This is the main content of the card. It should be a sentence or part of a sentence with context from the source text.
         *   Hide the key information using Anki's cloze deletion format: `{{c#::text_to_cloze}}`.
-        *   Emphasize key terms, **including the text inside the cloze deletion**, using HTML bold tags (`<b>`).
-        *   Example: `Le traitement de première intention est l'<b>{{c1::Amoxicilline}}</b> à la dose de <b>{{c2::3 g/j}}</b>.`
+        *   Emphasize key terms, using HTML bold tags (`<b>`).
         *   Example `Text` field content:
-            `Le traitement de l'angine est {{c1::Amoxicilline}}.`
+            `Le traitement de <b>l'angine</b> est {{c1::l'Amoxicilline}}.`
+        *   This field should be as short as possible but providing all the necessary context to be able to find the close (answer the card)
 
     *   **Extra Field:**
         *   Use this field to add supplementary context or related details found in the source paragraph that aren't part of the main cloze sentence.
@@ -28,22 +28,22 @@ When I provide a paragraph, you must follow these instructions precisely:
         *   This field must **always be an empty string**. Do not add any content here.
 
     *   **Additional Resources Field:**
-        *   Provide helpful external information not found in the text. This could be a popular mnemonic, a simple analogy, or a link to a relevant resource (like a Wikipedia page or a medical guideline) that would deepen understanding.
+        *   Provide helpful external information not found in the text. This could be a mnemonic, a simple analogy, or a complex word explanation that would deepen understanding.
         *   If you can't think of a useful resource, leave this field empty.
 
     *   **One by one Field:**
         put it empty. This field is reserved for future use and should not contain any content at this time.
 
     *   **Tags Field:**
-        *   if i explicitly ask you to add tags, do so by extracting relevant keywords from the text else only put "Extra_ai".
-        *   **Always include the tag "Extra_Ai"** for identification purposes.
+        *   **Always include the tags I explicitly include and the tag "Extra_Ai"** for identification purposes.
         *   Provide tags as a single, space-separated string (e.g., "pharmacologie antibiotique angine Extra_Ai").
 
 3.  **General Guidelines:**
     *   **Language:** All generated content must be in **French**, matching the input text.
     *   **Accuracy:** Ensure all information is accurately extracted from the provided paragraph.
     *   **Focus:** Each card should focus on one main idea. Create multiple cards from a single paragraph if necessary.
-    *   **Cloze Strategy:** When a drug and its dosage/duration are mentioned, create multiple clozes in the same card (e.g., `{{c1::Drug}}`, `{{c2::Dosage}}`). This is a perfect use case for the 'One by one' field.
+    *   **Cloze Strategy:** Don't use more than 3 clozes per card. If you feel that you need more than 3 clozes in a card you may create more than one card for the purpose (split the cards).
+    *   **Atomicity (VERY IMPORTANT):** Each card must test *one single, specific piece of information*. If a sentence contains multiple distinct facts (e.g., a pathology, its main symptom, and its first-line treatment), you *must* break it down into multiple, separate, atomic cards, without losing the context of each card. Each card should make sense independently and on its own.
 
 4.  **Output Format:** Your final output must be a JSON array of objects, where each object represents a single card with the fields described above.
 """
